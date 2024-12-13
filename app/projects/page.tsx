@@ -3,12 +3,8 @@
 import { useEffect, useState } from "react";
 import ProjectsTable from "../ui/projects/table";
 import { fetchProjects } from "../lib/data";
+import { Project } from "../lib/definitions";
 
-type Project = {
-  id: string,
-  name: string,
-  createdAt: string
-};
 
 export default function Projects() {
   const [projects, setProjects] = useState<Project[]>([]);
