@@ -23,4 +23,11 @@ export type Task = {
     dueDate: string,
     projectId: string,
     isCompleted: boolean,
+    repeatOption: string
 }
+
+export type TaskModalProps = {
+    onClose: () => void;
+    onSave: (task: Partial<Task>) => void;
+    projectList: Project[];
+  };

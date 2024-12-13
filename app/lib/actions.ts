@@ -1,8 +1,8 @@
 'use server';
 
 import { db } from "@/firebase";
-import { collection, doc, addDoc, deleteDoc} from "firebase/firestore";
-import { Project } from "./definitions";
+import { collection, doc, addDoc, deleteDoc, serverTimestamp} from "firebase/firestore";
+import { Project, Task } from "./definitions";
 
 
 export async function createProject(projectName:string){
@@ -37,3 +37,26 @@ export async function deleteProject(projectId: string): Promise<void>{
         throw new Error("Failed to delete project.");
       }
 }
+
+export async function createTask(task: Partial<Task>): Promise<Task>{
+    const newTask = {
+      ...task,
+      isCompleted: false,
+      dueDate: task.dueDate || serverTimestamp(),
+    };
+
+    try {
+      const tasksCollection = collection(db, "tasks")
+      const docRef = await addDoc(tasksCollection, newTask);
+      const taskData: Task = {
+            id: docRef.id, 
+            ...newTask 
+        } as Task
+        
+    return taskData
+        
+    } catch (error) {
+      console.error("Failed to add task:", error);
+      throw new Error("Failed to add task.");
+    }
+  }
