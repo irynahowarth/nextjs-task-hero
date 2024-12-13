@@ -62,7 +62,7 @@ export default function Projects() {
             Add Project
           </button>
         </div>
-        <ProjectsTable projects={projects}/>
+        <ProjectsTable projects={projects} setProjects={setProjects}/>
       </div>
     );
   }

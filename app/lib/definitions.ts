@@ -7,6 +7,10 @@ export type Project = {
     createdAt: string
   };
 
+export type ProjectsTableProps = {
+    projects: Project[];
+    setProjects: React.Dispatch<React.SetStateAction<Project[]>>;
+}; 
 
 export type Task = {
     id: string,
