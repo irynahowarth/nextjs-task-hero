@@ -1,17 +1,36 @@
+'use client'; 
+
+import { useEffect, useState } from "react";
 import ProjectsTable from "../ui/projects/table";
+import { fetchProjects } from "../lib/data";
+
+type Project = {
+  id: string,
+  name: string,
+  createdAt: string
+};
 
 export default function Projects() {
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  
+  useEffect(()=>{
+    const fetchAndSetProjects = async () =>{
+      setIsLoading(true);
+      try{
+        const projectData =  await fetchProjects()
+        setProjects(projectData)
+        console.log(projectData)
+      } catch(error){
+        console.error('Failed to fetch projects:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
 
-  const projects = [
-    { 
-      id: '122',
-      name: 'Home',
-      createdAt: '2023-12-11'},
-      { 
-        id: '123',
-        name: 'Sports',
-        createdAt: '2024-02-11'},
-  ]
+    fetchAndSetProjects()
+  },[])
+  
 
     return (
       <div className="">
