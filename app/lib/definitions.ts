@@ -12,6 +12,11 @@ export type ProjectsTableProps = {
     setProjects: React.Dispatch<React.SetStateAction<Project[]>>;
 }; 
 
+export type TasksTableProps = {
+    tasks: Task[];
+    setTasks: React.Dispatch<React.SetStateAction<Task[]>>;
+}; 
+
 export type Task = {
     id: string,
     name: string,
