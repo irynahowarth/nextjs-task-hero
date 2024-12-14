@@ -60,3 +60,14 @@ export async function createTask(task: Partial<Task>): Promise<Task>{
       throw new Error("Failed to add task.");
     }
   }
+
+  export async function deleteTask(taskId: string): Promise<void>{
+    try {
+        const taskDocRef = doc(db, "tasks", taskId);
+        await deleteDoc(taskDocRef);
+        console.log(`Task ${taskId} deleted successfully.`);
+      } catch (error) {
+        console.error("Error deleting task:", error);
+        throw new Error("Failed to delete task.");
+      }
+}

@@ -1,7 +1,19 @@
 import React from 'react'
 import { Task, TasksTableProps } from '@/app/lib/definitions'
+import { deleteTask } from '@/app/lib/actions';
 
 export default function TasksTable({tasks, setTasks}:TasksTableProps) {
+  const handleDeleteTask = async (taskId: string) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this task?");
+    if (!confirmDelete) return;
+
+    try {
+      await deleteTask(taskId);
+      setTasks((prev:Task[]) => prev.filter((task) => task.id !== taskId));
+    } catch (error) {
+      console.error("Failed to delete task", error);
+    }
+  };
     return (
     <div>
     {/* Tasks List */}
@@ -14,6 +26,12 @@ export default function TasksTable({tasks, setTasks}:TasksTableProps) {
             <div className="flex gap-2">
                 <button className="bg-gray-500 text-white px-4 py-1 rounded">
                 View Details
+                </button>
+                <button
+                    onClick={() => handleDeleteTask(task.id)}
+                    className="bg-red-500 text-white px-4 py-1 rounded"
+                >
+                    Delete
                 </button>
               </div>
           </li>
