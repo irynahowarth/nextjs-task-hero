@@ -3,12 +3,24 @@ import {useState, useEffect} from "react"
 import { Task } from "./lib/definitions";
 import {calculateWeekDays, formatToISO} from './lib/utils'
 import CalendarDay from "./ui/dashboard/calendarDay";
+import { fetchTasksForWeek } from "./lib/data";
 
 export default function Dashboard() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const today = new Date();
-  const totalDays = 7; 
+  const totalDays = 5; 
   const days = calculateWeekDays(today,totalDays); 
+
+  useEffect(() => {
+    const fetchWeeklyTasks = async () => {
+      const startDate = formatToISO(days[0]);
+      const endDate = formatToISO(days[days.length - 1]);
+      const weeklyTasks = await fetchTasksForWeek(startDate, endDate);
+      setTasks(weeklyTasks);
+    };
+
+    fetchWeeklyTasks();
+  }, []);
 
   return (
     <div className="p-4">

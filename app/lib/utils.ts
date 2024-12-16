@@ -38,3 +38,18 @@ export function isSameDay(dueDate: string, day: Date): boolean {
       dueDateObj.getDate() === day.getDate()
     );
   }
+/**
+ * Helper function to get day of the week
+ */
+  export function getDayOfWeek(date: Date): string {
+    const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    return daysOfWeek[date.getDay()];
+  }
+/**
+ * Helper function to get DD/MM date format for calendar
+ */
+  export function formatDateToDDMM(date: Date): string {
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    return `${day}/${month}`;
+  }
