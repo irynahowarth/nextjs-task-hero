@@ -20,7 +20,15 @@ export default function Dashboard() {
     };
 
     fetchWeeklyTasks();
-  }, []);
+  }, [days]);
+
+  const updateTaskCompletion = (taskId: string, isCompleted: boolean) => {
+    setTasks((prevTasks) =>
+      prevTasks.map((task) =>
+        task.id === taskId ? { ...task, isCompleted } : task
+      )
+    );
+  };
 
   return (
     <div className="p-4">
@@ -38,6 +46,7 @@ export default function Dashboard() {
             tasks={tasks.filter(
               (task) => task.dueDate === formatToISO(day)
             )}
+            onToggleTaskCompletion={updateTaskCompletion}
           />
         ))}
       </div>

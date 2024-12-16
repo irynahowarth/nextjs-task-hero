@@ -1,9 +1,21 @@
+import { toggleTaskCompletion } from '@/app/lib/actions';
 import { CalendarDayProps } from '@/app/lib/definitions'
 import { formatDateToDDMM, getDayOfWeek } from '@/app/lib/utils'
-import React from 'react'
+import React, { useState } from 'react'
 
 
-export default function calendarDay({date, tasks}: CalendarDayProps) {
+export default function calendarDay({date, tasks, onToggleTaskCompletion}: CalendarDayProps) {
+   
+    const handleToggleTaskCompletion = async (taskId: string, isCompleted: boolean) => {
+
+        try{
+          await toggleTaskCompletion(taskId, isCompleted) // Update Firebase
+          onToggleTaskCompletion(taskId, isCompleted); // Update local state in Dashboard
+        }catch(error){
+          console.error("Failed to toggle task completion:", error);
+        }
+    };
+
   return (
     <div className="border rounded p-2">
     <h3 className="text-lg font-bold">{getDayOfWeek(date)}</h3>
@@ -12,12 +24,13 @@ export default function calendarDay({date, tasks}: CalendarDayProps) {
         {tasks.length > 0 ? (
           tasks.map((task) => (
             <li key={task.id} className="flex justify-between items-center">
-              <span className={task.isCompleted ? "line-through" : ""}>{task.name}</span>
               <input
+                id={`task-${task.id}`}
                 type="checkbox"
                 checked={task.isCompleted}
-                onChange={()=>console.log('changed')}
+                onChange={() => handleToggleTaskCompletion(task.id, !task.isCompleted)}
               />
+              <label htmlFor={`task-${task.id}`} className={task.isCompleted ? "line-through" : ""}>{task.name}</label>
             </li>
           ))
         ) : (

@@ -1,7 +1,7 @@
 'use server';
 
 import { db } from "@/firebase";
-import { collection, doc, addDoc, deleteDoc, serverTimestamp} from "firebase/firestore";
+import { collection, doc, addDoc, deleteDoc, serverTimestamp, updateDoc} from "firebase/firestore";
 import { Project, Task } from "./definitions";
 
 
@@ -70,4 +70,13 @@ export async function createTask(task: Partial<Task>): Promise<Task>{
         console.error("Error deleting task:", error);
         throw new Error("Failed to delete task.");
       }
+}
+
+export async function toggleTaskCompletion(taskId: string, isCompleted: boolean) {
+  try {
+    const taskDoc = doc(db, "tasks", taskId);
+    await updateDoc(taskDoc, { isCompleted });
+  } catch (error) {
+    console.error("Failed to toggle task completion:", error);
+  }
 }

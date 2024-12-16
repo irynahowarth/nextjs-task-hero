@@ -35,4 +35,5 @@ export type TaskModalProps = {
 export type CalendarDayProps = {
     date: Date;
     tasks: Task[];
+    onToggleTaskCompletion:(taskId: string, isCompleted: boolean) => void;
 };
