@@ -31,3 +31,8 @@ export type TaskModalProps = {
     onSave: (task: Partial<Task>) => void;
     projectList: Project[];
   };
+
+export type CalendarDayProps = {
+    date: Date;
+    tasks: Task[];
+};
