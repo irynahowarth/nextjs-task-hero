@@ -2,11 +2,11 @@ import { useState } from "react";
 import { TaskModalProps } from "@/app/lib/definitions";
 
 
-const TaskModal: React.FC<TaskModalProps> = ({ onClose, onSave, projectList }) => {
-  const [name, setName] = useState("");
-  const [dueDate, setDueDate] = useState("");
-  const [repeatOption, setRepeatOption] = useState("none");
-  const [projectId, setProjectId] = useState("");
+const TaskModal: React.FC<TaskModalProps> = ({ onClose, onSave, projectList, initialTask = null }) => {
+  const [name, setName] = useState(initialTask?.name || "");
+  const [dueDate, setDueDate] = useState(initialTask?.dueDate || "");
+  const [repeatOption, setRepeatOption] = useState(initialTask?.repeatOption || "none");
+  const [projectId, setProjectId] = useState(initialTask?.projectId || "");
 
   const handleSave = () => {
     if (!name || !dueDate || !projectId) {
@@ -16,6 +16,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ onClose, onSave, projectList }) =
     onSave({ name, dueDate, projectId, repeatOption });
   };
 
+  console.log(initialTask)
   return (
     <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center">
       <div className="bg-white p-6 rounded w-96">

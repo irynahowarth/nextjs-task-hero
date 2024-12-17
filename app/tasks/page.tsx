@@ -13,6 +13,8 @@ export default function Tasks() {
   const [tasks, setTasks] = useState<Task[]>([])
   const [projects, setProjects] = useState<Project[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+
 
   useEffect(()=>{
     const fetchAndSetData = async () => {
@@ -40,24 +42,35 @@ export default function Tasks() {
       console.error("Failed to add task:", error);
     }
   };
+
+  const openModal = (task: Task | null = null) => {
+    setSelectedTask(task);
+    setIsModalOpen(true);
+  }
+
     return (
       <div className="">
         <h1 className="text-4xl font-bold">
         Tasks
         </h1>
         <button
-          onClick={() => setIsModalOpen(true)}
+          onClick={()=>openModal(null)}
           className="bg-blue-500 text-white px-4 py-2 rounded"
         >
           Add Task
         </button>
-        <TasksTable tasks={tasks} setTasks={setTasks} />
+        <TasksTable 
+          tasks={tasks} 
+          setTasks={setTasks} 
+          onEditTask={(task) => openModal(task)} 
+        />
          {/* Task Modal */}
         {isModalOpen && (
           <TaskModal
             onClose={() => setIsModalOpen(false)}
             onSave={handleAddTask}
             projectList={projects}
+            initialTask={selectedTask}
           />
         )}
       </div>

@@ -15,6 +15,7 @@ export type ProjectsTableProps = {
 export type TasksTableProps = {
     tasks: Task[];
     setTasks: React.Dispatch<React.SetStateAction<Task[]>>;
+    onEditTask: (task: Task | null) => void;
 }; 
 
 export type Task = {
@@ -30,6 +31,7 @@ export type TaskModalProps = {
     onClose: () => void;
     onSave: (task: Partial<Task>) => void;
     projectList: Project[];
+    initialTask: Task | null;
   };
 
 export type CalendarDayProps = {

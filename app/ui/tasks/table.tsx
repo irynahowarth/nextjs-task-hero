@@ -2,7 +2,7 @@ import React from 'react'
 import { Task, TasksTableProps } from '@/app/lib/definitions'
 import { deleteTask } from '@/app/lib/actions';
 
-export default function TasksTable({tasks, setTasks}:TasksTableProps) {
+export default function TasksTable({tasks, setTasks, onEditTask}:TasksTableProps) {
   const handleDeleteTask = async (taskId: string) => {
     const confirmDelete = window.confirm("Are you sure you want to delete this task?");
     if (!confirmDelete) return;
@@ -26,6 +26,12 @@ export default function TasksTable({tasks, setTasks}:TasksTableProps) {
             <div className="flex gap-2">
                 <button className="bg-gray-500 text-white px-4 py-1 rounded">
                 View Details
+                </button>
+                <button
+                    onClick={()=>onEditTask(task)}
+                    className="bg-green-500 text-white px-4 py-1 rounded"
+                >
+                    Edit
                 </button>
                 <button
                     onClick={() => handleDeleteTask(task.id)}
