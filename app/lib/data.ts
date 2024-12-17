@@ -24,6 +24,7 @@ export async function fetchTasks():Promise<Task[]> {
       const tasksData: Task[] = tasksSnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data(),
+        dueDate: doc.data().dueDate?.toDate()?.toISOString() || "",
       })) as Task[];
     return tasksData
 

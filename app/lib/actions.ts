@@ -1,7 +1,7 @@
 'use server';
 
 import { db } from "@/firebase";
-import { collection, doc, addDoc, deleteDoc, serverTimestamp, updateDoc} from "firebase/firestore";
+import { collection, doc, addDoc, deleteDoc, serverTimestamp, updateDoc, setDoc} from "firebase/firestore";
 import { Project, Task } from "./definitions";
 
 
@@ -50,7 +50,8 @@ export async function createTask(task: Partial<Task>): Promise<Task>{
       const docRef = await addDoc(tasksCollection, newTask);
       const taskData: Task = {
             id: docRef.id, 
-            ...newTask 
+            ...newTask,
+            dueDate: newTask.dueDate instanceof Date ? newTask.dueDate.toISOString() : newTask.dueDate,
         } as Task
         
     return taskData
