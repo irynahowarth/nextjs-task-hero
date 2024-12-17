@@ -7,9 +7,9 @@ import { fetchTasksForWeek } from "./lib/data";
 
 export default function Dashboard() {
   const [tasks, setTasks] = useState<Task[]>([]);
-  const today = new Date();
+  const [currentDate, setCurrentDate] = useState(new Date());
   const totalDays = 5; 
-  const days = calculateWeekDays(today,totalDays); 
+  const days = calculateWeekDays(currentDate,totalDays); 
 
   useEffect(() => {
     const fetchWeeklyTasks = async () => {
@@ -30,9 +30,49 @@ export default function Dashboard() {
     );
   };
 
+  // Navigation handlers
+  const goToPreviousDays = () => {
+    setCurrentDate((prev) => {
+      const newDate = new Date(prev);
+      newDate.setDate(newDate.getDate() - Math.floor(totalDays/2));
+      return newDate;
+    });
+  };
+  const goToNextDays = () => {
+    setCurrentDate((prev) => {
+      const newDate = new Date(prev);
+      newDate.setDate(newDate.getDate() + Math.floor(totalDays/2));
+      return newDate;
+    });
+  };
+  const resetToToday = () => {
+    setCurrentDate(new Date());
+  };
+
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
+      {/* Navigation Buttons */}
+      <div className="flex justify-center gap-4 mb-6">
+        <button
+          onClick={goToPreviousDays}
+          className="px-4 py-2 bg-gray-500 text-white rounded"
+        >
+          ← Previous
+        </button>
+        <button
+          onClick={resetToToday}
+          className="px-4 py-2 bg-blue-500 text-white rounded"
+        >
+          Today
+        </button>
+        <button
+          onClick={goToNextDays}
+          className="px-4 py-2 bg-gray-500 text-white rounded"
+        >
+          Next →
+        </button>
+      </div>
       <div 
         className={`grid gap-4`}
         style={{
