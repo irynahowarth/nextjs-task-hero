@@ -34,7 +34,7 @@ export default function TasksTable({tasks, setTasks, onEditTask}:TasksTableProps
                     Edit
                 </button>
                 <button
-                    onClick={() => handleDeleteTask(task.id)}
+                    onClick={() =>handleDeleteTask(task.id)}
                     className="bg-red-500 text-white px-4 py-1 rounded"
                 >
                     Delete

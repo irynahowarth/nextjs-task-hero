@@ -20,12 +20,18 @@ export async function fetchProjects():Promise<Project[]> {
 export async function fetchTasks():Promise<Task[]> {
   try{
     const tasksCollection = collection(db, "tasks");
-      const tasksSnapshot = await getDocs(tasksCollection);
-      const tasksData: Task[] = tasksSnapshot.docs.map(doc => ({
+    const tasksSnapshot = await getDocs(tasksCollection);
+
+    const tasksData: Task[] = tasksSnapshot.docs.map(doc => { 
+      const data = doc.data()
+      return{
         id: doc.id,
-        ...doc.data(),
-        dueDate: doc.data().dueDate?.toDate()?.toISOString() || "",
-      })) as Task[];
+        ...data,
+        dueDate:  data.dueDate && typeof data.dueDate.toDate === "function"
+        ? data.dueDate.toDate().toISOString()
+        : data.dueDate || ""
+        
+      }}) 
     return tasksData
 
   }catch(error){

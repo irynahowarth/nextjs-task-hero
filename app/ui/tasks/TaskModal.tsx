@@ -2,21 +2,45 @@ import { useState } from "react";
 import { TaskModalProps } from "@/app/lib/definitions";
 
 
-const TaskModal: React.FC<TaskModalProps> = ({ onClose, onSave, projectList, initialTask = null }) => {
-  const [name, setName] = useState(initialTask?.name || "");
-  const [dueDate, setDueDate] = useState(initialTask?.dueDate || "");
-  const [repeatOption, setRepeatOption] = useState(initialTask?.repeatOption || "none");
-  const [projectId, setProjectId] = useState(initialTask?.projectId || "");
+const TaskModal: React.FC<TaskModalProps> = ({ 
+  onClose, 
+  onSave, 
+  projectList, 
+  initialTask = null }) => {
+  const [formData, setFormData] = useState({
+    id: initialTask?.id || "",
+    name: initialTask?.name || "",
+    dueDate: initialTask?.dueDate || "",
+    repeatOption: initialTask?.repeatOption || "",
+    projectId: initialTask?.projectId || "",
+  })
 
   const handleSave = () => {
-    if (!name || !dueDate || !projectId) {
+    if (!formData.name.trim() || !formData.dueDate || !formData.projectId){
       alert("Please fill all fields.");
       return;
     }
-    onSave({ name, dueDate, projectId, repeatOption });
+
+    const dueDate = new Date(formData.dueDate);
+    if (isNaN(dueDate.getTime())) {
+      alert("Invalid due date.");
+      return;
+    }
+    const taskToSave = {
+      ...formData,
+      dueDate: formData.dueDate || initialTask?.dueDate,
+    };
+    onSave(taskToSave);
   };
 
-  console.log(initialTask)
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
   return (
     <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center">
       <div className="bg-white p-6 rounded w-96">
@@ -27,8 +51,9 @@ const TaskModal: React.FC<TaskModalProps> = ({ onClose, onSave, projectList, ini
           <label className="block mb-1 font-medium">Task Name</label>
           <input
             type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
             className="w-full border p-2 rounded"
           />
         </div>
@@ -38,8 +63,9 @@ const TaskModal: React.FC<TaskModalProps> = ({ onClose, onSave, projectList, ini
           <label className="block mb-1 font-medium">Due Date</label>
           <input
             type="date"
-            value={dueDate}
-            onChange={(e) => setDueDate(e.target.value)}
+            name="dueDate"
+            value={formData.dueDate}
+            onChange={handleChange}
             className="w-full border p-2 rounded"
           />
         </div>
@@ -48,8 +74,9 @@ const TaskModal: React.FC<TaskModalProps> = ({ onClose, onSave, projectList, ini
         <div className="mb-4">
           <label className="block mb-1 font-medium">Repeat</label>
           <select
-            value={repeatOption}
-            onChange={(e) => setRepeatOption(e.target.value)}
+            value={formData.repeatOption}
+            name="repeatOption"
+            onChange={handleChange}
             className="w-full border p-2 rounded"
           >
             <option value="none">None</option>
@@ -62,8 +89,9 @@ const TaskModal: React.FC<TaskModalProps> = ({ onClose, onSave, projectList, ini
         <div className="mb-4">
           <label className="block mb-1 font-medium">Assign to Project</label>
           <select
-            value={projectId}
-            onChange={(e) => setProjectId(e.target.value)}
+            value={formData.projectId}
+            name="projectId"
+            onChange={handleChange}
             className="w-full border p-2 rounded"
           >
             <option value="">Select a project</option>

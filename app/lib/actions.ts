@@ -1,7 +1,7 @@
 'use server';
 
 import { db } from "@/firebase";
-import { collection, doc, addDoc, deleteDoc, serverTimestamp, updateDoc, setDoc} from "firebase/firestore";
+import { collection, doc, addDoc, deleteDoc, serverTimestamp, updateDoc, setDoc, getDoc} from "firebase/firestore";
 import { Project, Task } from "./definitions";
 
 
@@ -39,22 +39,17 @@ export async function deleteProject(projectId: string): Promise<void>{
 }
 
 export async function createTask(task: Partial<Task>): Promise<Task>{
-    const newTask = {
-      ...task,
+    const { id, ...newTask } = task;
+    const finalTask = {
+      ...newTask,
       isCompleted: false,
-      dueDate: task.dueDate || serverTimestamp(),
+      dueDate: newTask.dueDate || serverTimestamp(),
     };
 
     try {
       const tasksCollection = collection(db, "tasks")
-      const docRef = await addDoc(tasksCollection, newTask);
-      const taskData: Task = {
-            id: docRef.id, 
-            ...newTask,
-            dueDate: newTask.dueDate instanceof Date ? newTask.dueDate.toISOString() : newTask.dueDate,
-        } as Task
-        
-    return taskData
+      const docRef = await addDoc(tasksCollection, finalTask);
+      return { id: docRef.id, ...finalTask } as Task;
         
     } catch (error) {
       console.error("Failed to add task:", error);
@@ -72,11 +67,45 @@ export async function createTask(task: Partial<Task>): Promise<Task>{
         throw new Error("Failed to delete task.");
       }
 }
+export async function updateTask(task: Partial<Task>): Promise<Task> {
+  const { id, ...fieldsToUpdate } = task;
+
+  if (!id) {
+    throw new Error("Task ID is required for update.");
+  }
+
+  // Filter out undefined values
+  const filteredFields = Object.fromEntries(
+    Object.entries(fieldsToUpdate).filter(([_, value]) => value !== undefined)
+  );
+
+  const taskDocRef = doc(db, "tasks", id);
+
+  try {
+    await updateDoc(taskDocRef, fieldsToUpdate);
+
+    return { id, ...fieldsToUpdate } as Task;
+  } catch (error) {
+    console.error("Failed to update task:", error);
+    throw new Error("Failed to update task.");
+  }
+}
 
 export async function toggleTaskCompletion(taskId: string, isCompleted: boolean) {
   try {
     const taskDoc = doc(db, "tasks", taskId);
-    await updateDoc(taskDoc, { isCompleted });
+    // Fetch the existing task to preserve its fields
+    const snapshot = await getDoc(taskDoc);
+    const existingTask = snapshot.data();
+
+    if (!existingTask) {
+      throw new Error("Task not found.");
+    }
+    await updateDoc(taskDoc, {
+      ...existingTask,
+      dueDate: existingTask.dueDate,
+      isCompleted,
+    });
   } catch (error) {
     console.error("Failed to toggle task completion:", error);
   }

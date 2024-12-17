@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Task, Project } from "../lib/definitions";
 import { fetchTasks, fetchProjects } from "../lib/data";
-import { createTask } from "../lib/actions";
+import { createTask, updateTask } from "../lib/actions";
 import TasksTable from "../ui/tasks/table";
 import TaskModal from "../ui/tasks/TaskModal";
 
@@ -32,16 +32,29 @@ export default function Tasks() {
     fetchAndSetData();
   },[])
 
-   // Create new Task and add it to Firebase
-  const handleAddTask = async (newTask: Partial<Task>) => {
+
+  const handleSaveTask = async (task: Partial<Task>) => {
+   
     try {
-      const addedTask = await createTask(newTask);
-      setTasks((prev) => [...prev, addedTask]);
+      if (task?.id) {
+        // Update existing task
+        const updatedTask = await updateTask(task as Task);
+        setTasks((prev) =>
+          prev.map((t) => (t.id === updatedTask.id ? updatedTask : t))
+        );
+      } else {
+        // Create a new task
+        const addedTask = await createTask(task);
+        setTasks((prev) => [...prev, addedTask]);
+      }
       setIsModalOpen(false);
+      setSelectedTask(null);
     } catch (error) {
-      console.error("Failed to add task:", error);
+      console.error("Failed to save task:", error);
+      alert("Failed to save task.");
     }
   };
+  
 
   const openModal = (task: Task | null = null) => {
     setSelectedTask(task);
@@ -68,7 +81,7 @@ export default function Tasks() {
         {isModalOpen && (
           <TaskModal
             onClose={() => setIsModalOpen(false)}
-            onSave={handleAddTask}
+            onSave={handleSaveTask}
             projectList={projects}
             initialTask={selectedTask}
           />
