@@ -7,9 +7,21 @@ import { fetchTasksForWeek } from "./lib/data";
 
 export default function Dashboard() {
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [currentDate, setCurrentDate] = useState(new Date());
+  const [currentDate, setCurrentDate] = useState(
+    // Load initial state from localStorage or default to today's date
+    () => {
+      const savedDate = localStorage.getItem('currentDate');
+      return savedDate ? new Date(savedDate) : new Date();
+    }
+  );
   const totalDays = 5; 
   const days = calculateWeekDays(currentDate,totalDays); 
+
+  // Save `currentDate` to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('currentDate', currentDate.toISOString());
+  }, [currentDate]);
+  
 
   useEffect(() => {
     const fetchWeeklyTasks = async () => {
