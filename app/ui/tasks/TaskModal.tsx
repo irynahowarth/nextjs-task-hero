@@ -44,7 +44,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
   return (
     <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center">
       <div className="bg-white p-6 rounded w-96">
-        <h2 className="text-xl font-bold mb-4">Add New Task</h2>
+        <h2 className="text-xl font-bold mb-4">{formData.id? 'Edit ': 'Add New '}Task</h2>
 
         {/* Task Name */}
         <div className="mb-4">

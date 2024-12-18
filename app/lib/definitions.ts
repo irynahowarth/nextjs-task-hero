@@ -10,6 +10,7 @@ export type Project = {
 export type ProjectsTableProps = {
     projects: Project[];
     setProjects: React.Dispatch<React.SetStateAction<Project[]>>;
+    onEditProject: (project: Project | null) => void;
 }; 
 
 export type TasksTableProps = {
@@ -32,6 +33,12 @@ export type TaskModalProps = {
     onSave: (task: Partial<Task>) => void;
     projectList: Project[];
     initialTask: Task | null;
+  };
+  
+export type ProjectModalProps = {
+    onClose: () => void;
+    onSave: (project: Partial<Project>) => void;
+    initialProject: Project | null;
   };
 
 export type CalendarDayProps = {

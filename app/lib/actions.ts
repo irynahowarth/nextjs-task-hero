@@ -5,18 +5,21 @@ import { collection, doc, addDoc, deleteDoc, serverTimestamp, updateDoc, setDoc,
 import { Project, Task } from "./definitions";
 
 
-export async function createProject(projectName:string){
-    const newProject = {
-        name: projectName,
-        createdAt: new Date().toISOString(),
+export async function createProject(project: Partial<Project>){
+    const { id, ...newProject } = project;
+
+    const finalProject = {
+      ...newProject,
+      createdAt: newProject?.createdAt || new Date().toISOString(),
     };
+
 
     try{
         const projectsCollection = collection(db, "projects");
-        const docRef = await addDoc(projectsCollection, newProject);
+        const docRef = await addDoc(projectsCollection, finalProject);
         const projectsData: Project = {
             id: docRef.id,
-            ...newProject,
+            ...finalProject,
         } as Project
         return projectsData
 
@@ -36,6 +39,29 @@ export async function deleteProject(projectId: string): Promise<void>{
         console.error("Error deleting project:", error);
         throw new Error("Failed to delete project.");
       }
+}
+export async function updateProject(project: Partial<Project>): Promise<Project> {
+  const { id, ...fieldsToUpdate } = project;
+
+  if (!id) {
+    throw new Error("Project ID is required for update.");
+  }
+
+  // Filter out undefined values
+  const filteredFields = Object.fromEntries(
+    Object.entries(fieldsToUpdate).filter(([_, value]) => value !== undefined)
+  );
+
+  const projectDocRef = doc(db, "projects", id);
+
+  try {
+    await updateDoc(projectDocRef, fieldsToUpdate);
+
+    return { id, ...fieldsToUpdate } as Project;
+  } catch (error) {
+    console.error("Failed to update project:", error);
+    throw new Error("Failed to update project.");
+  }
 }
 
 export async function createTask(task: Partial<Task>): Promise<Task>{

@@ -2,7 +2,10 @@ import React from 'react'
 import { Project, ProjectsTableProps } from '@/app/lib/definitions'
 import { deleteProject } from '@/app/lib/actions';
 
-export default function ProjectsTable({projects, setProjects}:ProjectsTableProps) {
+export default function ProjectsTable({
+  projects, 
+  setProjects, 
+  onEditProject}:ProjectsTableProps) {
     const handleDeleteProject = async (projectId: string) => {
         const confirmDelete = window.confirm("Are you sure you want to delete this project?");
         if (!confirmDelete) return;
@@ -25,6 +28,12 @@ export default function ProjectsTable({projects, setProjects}:ProjectsTableProps
             <div className="flex gap-2">
                 <button className="bg-gray-500 text-white px-4 py-1 rounded">
                 View Tasks
+                </button>
+                <button
+                    onClick={()=>onEditProject(project)}
+                    className="bg-green-500 text-white px-4 py-1 rounded"
+                >
+                    Edit
                 </button>
                 <button
                     onClick={() => handleDeleteProject(project.id)}
