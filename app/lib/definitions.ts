@@ -25,8 +25,12 @@ export type Task = {
     dueDate: string,
     projectId: string,
     isCompleted: boolean,
-    repeatOption: string
+    repeatOption: "none" | "daily" | "weekly";
 }
+export type TaskInstance = {
+  date: string; 
+  isCompleted: boolean;
+};
 
 export type TaskModalProps = {
     onClose: () => void;
@@ -44,5 +48,5 @@ export type ProjectModalProps = {
 export type CalendarDayProps = {
     date: Date;
     tasks: Task[];
-    onToggleTaskCompletion:(taskId: string, isCompleted: boolean) => void;
+    onToggleTaskCompletion:(taskId: string,date: string, isCompleted: boolean) => void;
 };

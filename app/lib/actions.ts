@@ -117,22 +117,13 @@ export async function updateTask(task: Partial<Task>): Promise<Task> {
   }
 }
 
-export async function toggleTaskCompletion(taskId: string, isCompleted: boolean) {
+export async function toggleTaskCompletion(taskId: string, date: string, isCompleted: boolean): Promise<void> {
   try {
-    const taskDoc = doc(db, "tasks", taskId);
-    // Fetch the existing task to preserve its fields
-    const snapshot = await getDoc(taskDoc);
-    const existingTask = snapshot.data();
-
-    if (!existingTask) {
-      throw new Error("Task not found.");
-    }
-    await updateDoc(taskDoc, {
-      ...existingTask,
-      dueDate: existingTask.dueDate,
-      isCompleted,
-    });
+    const instanceDocRef = doc(db, `tasks/${taskId}/taskInstances/${date}`);
+    await setDoc(instanceDocRef, { date, isCompleted }, { merge: true });
+    console.log("Task completion toggled successfully");
   } catch (error) {
     console.error("Failed to toggle task completion:", error);
+    throw new Error("Failed to toggle task completion.");
   }
 }

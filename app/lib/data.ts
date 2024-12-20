@@ -1,6 +1,6 @@
 import { db } from "@/firebase";
-import { collection, getDocs, addDoc, query, where } from "firebase/firestore";
-import { Project, Task } from "./definitions";
+import { collection, getDocs, addDoc, query, where, doc, getDoc, setDoc  } from "firebase/firestore";
+import { Project, Task, TaskInstance } from "./definitions";
 
 export async function fetchProjects():Promise<Project[]> {
     try{
@@ -51,12 +51,57 @@ export async function fetchTasksForWeek(
       where("dueDate", "<=", endDate)
     );
     const tasksSnapshot = await getDocs(q);
-    return tasksSnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    })) as Task[];
+
+    const tasksWithInstances = await Promise.all(
+    tasksSnapshot.docs.map(async (taskDoc) => {
+      const task = taskDoc.data() as Task;
+
+      // Get all task instances for this task
+      const instancesCollection = collection(db, `tasks/${taskDoc.id}/taskInstances`);
+      const instancesSnapshot = await getDocs(instancesCollection);
+
+      // const instanceDocRef = doc(db, `tasks/${taskDoc.id}/taskInstances/${task.dueDate}`);
+      // const instanceDoc = await getDoc(instanceDocRef);
+      const instances = instancesSnapshot.docs.map((instanceDoc) => ({
+        ...instanceDoc.data(),
+        id: instanceDoc.id,
+      }));
+
+      return {
+        ...task,
+        id: taskDoc.id,
+        instances,
+      };
+    })
+  );
+    return tasksWithInstances;
+
   } catch (error) {
     console.error("Failed to fetch tasks for the week:", error);
     throw new Error("Failed to fetch tasks.");
+  }
+}
+
+export async function ensureTaskInstances(date: string,): Promise<void> {
+  try {
+    const tasksCollection = collection(db, "tasks");
+    const tasksSnapshot = await getDocs(tasksCollection);
+
+    await Promise.all(
+      tasksSnapshot.docs.map(async (taskDoc) => {
+        const task = taskDoc.data() as Task;
+        if (task.repeatOption === "none") return;
+        
+        const instanceDocRef = doc(db, `tasks/${taskDoc.id}/taskInstances/${date}`);
+        const instanceDoc = await getDoc(instanceDocRef);
+        
+        if (!instanceDoc.exists()) {
+          await setDoc(instanceDocRef, { date, isCompleted: false });
+        }
+      })
+    );
+  } catch (error) {
+    console.error("Failed to ensure task instances:", error);
+    throw new Error("Failed to ensure task instances.");
   }
 }
